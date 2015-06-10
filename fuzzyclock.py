@@ -5,47 +5,42 @@ import datetime
 import sys
 
 def parseHour(hour):
-    hourList = ("meia noite", "uma", "duas", "tres", "quatro", "cinco", "seis",
+    hourList = ("uma", "duas", "tres", "quatro", "cinco", "seis",
                 "sete", "oito", "nove", "dez", "onze", "meio dia")
-    if hour > 23:
-        hour = 0
-    elif hour > 12:
-        hour = hour - 12
-    return hourList[hour]
+
+    return "meia noite" if hour == 24 else hourList[(hour%12)-1]
 
 def junction(hour):
-    if hour <= 1 or hour == 13 or hour >= 23:
-        return "a"
-    elif hour == 12:
-        return "o"
-    else:
-        return "as"
+    junctionList = [
+        ([1, 13, 24], " a "),
+        ([12], " o "),
+    ]
+    for theRange, theText in junctionList:
+        if hour in theRange:
+            return theText
+
+    return " as "
 
 def parseMinute(hour, minute):
-    if 3 <= minute < 8:
-        return parseHour(hour) + " e cinco"
-    elif 8 <= minute < 13:
-        return parseHour(hour) + " e dez"
-    elif 13 <= minute < 18:
-        return parseHour(hour) + " e quinze"
-    elif 18 <= minute < 23:
-        return parseHour(hour) + " e vinte"
-    elif 23 <= minute < 28:
-        return parseHour(hour) + " e vinte e cinco"
-    elif 28 <= minute < 33:
-        return parseHour(hour) + " e meia"
-    elif 33 <= minute < 38:
-        return "vinte e cinco para {0} {1}".format(junction(hour + 1), parseHour(hour + 1))
-    elif 38 <= minute < 43:
-        return "vinte para {0} {1}".format(junction(hour + 1), parseHour(hour + 1))
-    elif 43 <= minute < 48:
-        return "quinze para {0} {1}".format(junction(hour + 1), parseHour(hour + 1))
-    elif 48 <= minute < 53:
-        return "dez para {0} {1}".format(junction(hour + 1), parseHour(hour + 1))
-    elif 53 <= minute < 58:
-        return "cinco para {0} {1}".format(junction(hour + 1), parseHour(hour + 1))
-    else:
-        return parseHour(hour)
+    minuteList = [
+        (range(3, 8), parseHour(hour) + " e cinco"),
+        (range(3, 8), parseHour(hour) + " e cinco"),
+        (range(8, 13), parseHour(hour) + " e dez"),
+        (range(13, 18), parseHour(hour) + " e quinze"),
+        (range(18, 23), parseHour(hour) + " e vinte"),
+        (range(23, 28), parseHour(hour) + " e vinte e cinco"),
+        (range(28, 33), parseHour(hour) + " e meia"),
+        (range(33, 38), parseHour(hour) + " e trinta e cinco"),
+        (range(38, 43), "vinte para" + junction(hour + 1) + parseHour(hour + 1)),
+        (range(43, 48), "quinze para" + junction(hour + 1) + parseHour(hour + 1)),
+        (range(48, 53), "dez para" + junction(hour + 1) + parseHour(hour + 1)),
+        (range(53, 58), "cinco para" + junction(hour + 1) + parseHour(hour + 1)),
+    ]
+    for theRange, theText in minuteList:
+        if minute in theRange:
+            return theText
+
+    return parseHour(hour)
 
 def main():
     h = int(sys.argv[1]) if len(sys.argv) > 2 else datetime.datetime.now().time().hour
@@ -53,3 +48,6 @@ def main():
     print(parseMinute(h, m))
 
 main()
+
+# for i in range(0, 24):
+#     print(i, junction(i), parseMinute(i, 40))

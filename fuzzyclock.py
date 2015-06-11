@@ -24,9 +24,8 @@ def junction(hour):
 
     return switch(hour, junctionList, " as ")
 
-def parseMinute(hour, minute):
+def parseTime(hour, minute):
     minuteList = [
-        (range(3, 8), lambda:parseHour(hour) + " e cinco"),
         (range(3, 8), lambda:parseHour(hour) + " e cinco"),
         (range(8, 13), lambda:parseHour(hour) + " e dez"),
         (range(13, 18), lambda:parseHour(hour) + " e quinze"),
@@ -38,6 +37,8 @@ def parseMinute(hour, minute):
         (range(43, 48), lambda:"quinze para" + junction(hour + 1) + parseHour(hour + 1)),
         (range(48, 53), lambda:"dez para" + junction(hour + 1) + parseHour(hour + 1)),
         (range(53, 58), lambda:"cinco para" + junction(hour + 1) + parseHour(hour + 1)),
+        (range(58, 60), lambda:parseHour(hour + 1)),
+        (range(0, 3), lambda:parseHour(hour)),
     ]
 
     return switch(minute, minuteList, parseHour(hour))
@@ -45,6 +46,6 @@ def parseMinute(hour, minute):
 def main():
     h = int(sys.argv[1]) if len(sys.argv) > 2 else datetime.datetime.now().time().hour
     m = int(sys.argv[2]) if len(sys.argv) > 2 else datetime.datetime.now().time().minute
-    print(parseMinute(h, m))
+    print(parseTime(h, m))
 
 main()

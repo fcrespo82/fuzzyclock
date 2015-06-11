@@ -4,48 +4,48 @@
 import datetime
 import sys
 
-def switch(x, caseList, default):
-    for theRange, theResponse in caseList:
-        if x in theRange:
-            return theResponse()
+def switch(choice, case_list, default):
+    for the_range, the_response in case_list:
+        if choice in the_range:
+            return the_response()
     return default
 
-def parseHour(hour):
-    hourList = ("uma", "duas", "tres", "quatro", "cinco", "seis",
-                "sete", "oito", "nove", "dez", "onze", "meio dia")
+def parse_hour(hour):
+    hour_list = ("uma", "duas", "tres", "quatro", "cinco", "seis", "sete",
+                 "oito", "nove", "dez", "onze", "meio dia")
 
-    return "meia noite" if hour == 24 else hourList[(hour%12)-1]
+    return "meia noite" if hour == 24 else hour_list[(hour%12)-1]
 
 def junction(hour):
-    junctionList = [
-        ([1, 13, 24, 25], lambda:" a "),
-        ([12], lambda:" o "),
+    junction_list = [
+        ([1, 13, 24, 25], lambda: " a "),
+        ([12], lambda: " o "),
     ]
 
-    return switch(hour, junctionList, " as ")
+    return switch(hour, junction_list, " as ")
 
-def parseTime(hour, minute):
-    minuteList = [
-        (range(3, 8), lambda:parseHour(hour) + " e cinco"),
-        (range(8, 13), lambda:parseHour(hour) + " e dez"),
-        (range(13, 18), lambda:parseHour(hour) + " e quinze"),
-        (range(18, 23), lambda:parseHour(hour) + " e vinte"),
-        (range(23, 28), lambda:parseHour(hour) + " e vinte e cinco"),
-        (range(28, 33), lambda:parseHour(hour) + " e meia"),
-        (range(33, 38), lambda:parseHour(hour) + " e trinta e cinco"),
-        (range(38, 43), lambda:"vinte para" + junction(hour + 1) + parseHour(hour + 1)),
-        (range(43, 48), lambda:"quinze para" + junction(hour + 1) + parseHour(hour + 1)),
-        (range(48, 53), lambda:"dez para" + junction(hour + 1) + parseHour(hour + 1)),
-        (range(53, 58), lambda:"cinco para" + junction(hour + 1) + parseHour(hour + 1)),
-        (range(58, 60), lambda:parseHour(hour + 1)),
-        (range(0, 3), lambda:parseHour(hour)),
+def parse_time(hour, minute):
+    minute_list = [
+        (range(3, 8), lambda: parse_hour(hour) + " e cinco"),
+        (range(8, 13), lambda: parse_hour(hour) + " e dez"),
+        (range(13, 18), lambda: parse_hour(hour) + " e quinze"),
+        (range(18, 23), lambda: parse_hour(hour) + " e vinte"),
+        (range(23, 28), lambda: parse_hour(hour) + " e vinte e cinco"),
+        (range(28, 33), lambda: parse_hour(hour) + " e meia"),
+        (range(33, 38), lambda: parse_hour(hour) + " e trinta e cinco"),
+        (range(38, 43), lambda: "vinte para" + junction(hour + 1) + parse_hour(hour + 1)),
+        (range(43, 48), lambda: "quinze para" + junction(hour + 1) + parse_hour(hour + 1)),
+        (range(48, 53), lambda: "dez para" + junction(hour + 1) + parse_hour(hour + 1)),
+        (range(53, 58), lambda: "cinco para" + junction(hour + 1) + parse_hour(hour + 1)),
+        (range(58, 60), lambda: parse_hour(hour + 1)),
+        (range(0, 3), lambda: parse_hour(hour)),
     ]
 
-    return switch(minute, minuteList, parseHour(hour))
+    return switch(minute, minute_list, parse_hour(hour))
 
 def main():
-    h = int(sys.argv[1]) if len(sys.argv) > 2 else datetime.datetime.now().time().hour
-    m = int(sys.argv[2]) if len(sys.argv) > 2 else datetime.datetime.now().time().minute
-    print(parseTime(h, m))
+    the_hour = int(sys.argv[1]) if len(sys.argv) > 2 else datetime.datetime.now().time().hour
+    the_minute = int(sys.argv[2]) if len(sys.argv) > 2 else datetime.datetime.now().time().minute
+    print(parse_time(the_hour, the_minute))
 
 main()

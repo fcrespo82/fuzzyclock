@@ -2,7 +2,12 @@
 # coding: utf-8
 
 import datetime
-import sys
+import docopt
+
+usage="""usage:
+    fuzzyclock.py [HOUR MINUTES]
+"""
+options={}
 
 def switch(choice, case_list, default):
     for the_range, the_response in case_list:
@@ -14,11 +19,11 @@ def parse_hour(hour):
     hour_list = ("uma", "duas", "tres", "quatro", "cinco", "seis", "sete",
                  "oito", "nove", "dez", "onze", "meio dia")
 
-    return "meia noite" if hour == 24 else hour_list[(hour%12)-1]
+    return "meia noite" if hour == 24 or hour == 0 else hour_list[(hour%12)-1]
 
 def junction(hour):
     junction_list = [
-        ([1, 13, 24, 25], lambda: " a "),
+        ([1, 13, 24, 25, 0], lambda: " a "),
         ([12], lambda: " o "),
     ]
 
@@ -26,26 +31,32 @@ def junction(hour):
 
 def parse_time(hour, minute):
     minute_list = [
-        (xrange(3, 8), lambda: parse_hour(hour) + " e cinco"),
-        (xrange(8, 13), lambda: parse_hour(hour) + " e dez"),
-        (xrange(13, 18), lambda: parse_hour(hour) + " e quinze"),
-        (xrange(18, 23), lambda: parse_hour(hour) + " e vinte"),
-        (xrange(23, 28), lambda: parse_hour(hour) + " e vinte e cinco"),
-        (xrange(28, 33), lambda: parse_hour(hour) + " e meia"),
-        (xrange(33, 38), lambda: parse_hour(hour) + " e trinta e cinco"),
-        (xrange(38, 43), lambda: "vinte para" + junction(hour + 1) + parse_hour(hour + 1)),
-        (xrange(43, 48), lambda: "quinze para" + junction(hour + 1) + parse_hour(hour + 1)),
-        (xrange(48, 53), lambda: "dez para" + junction(hour + 1) + parse_hour(hour + 1)),
-        (xrange(53, 58), lambda: "cinco para" + junction(hour + 1) + parse_hour(hour + 1)),
-        (xrange(58, 60), lambda: parse_hour(hour + 1)),
-        (xrange(0, 3), lambda: parse_hour(hour)),
+        (range(3, 8), lambda: parse_hour(hour) + " e cinco"),
+        (range(8, 13), lambda: parse_hour(hour) + " e dez"),
+        (range(13, 18), lambda: parse_hour(hour) + " e quinze"),
+        (range(18, 23), lambda: parse_hour(hour) + " e vinte"),
+        (range(23, 28), lambda: parse_hour(hour) + " e vinte e cinco"),
+        (range(28, 33), lambda: parse_hour(hour) + " e meia"),
+        (range(33, 38), lambda: parse_hour(hour) + " e trinta e cinco"),
+        (range(38, 43), lambda: "vinte para" + junction(hour + 1) + parse_hour(hour + 1)),
+        (range(43, 48), lambda: "quinze para" + junction(hour + 1) + parse_hour(hour + 1)),
+        (range(48, 53), lambda: "dez para" + junction(hour + 1) + parse_hour(hour + 1)),
+        (range(53, 58), lambda: "cinco para" + junction(hour + 1) + parse_hour(hour + 1)),
+        (range(58, 60), lambda: parse_hour(hour + 1)),
+        (range(0, 3), lambda: parse_hour(hour)),
     ]
 
     return switch(minute, minute_list, parse_hour(hour))
 
 def main():
-    the_hour = int(sys.argv[1]) if len(sys.argv) > 2 else datetime.datetime.now().time().hour
-    the_minute = int(sys.argv[2]) if len(sys.argv) > 2 else datetime.datetime.now().time().minute
+    if options['HOUR'] and options['MINUTES']:
+        the_hour = int(options['HOUR'])
+        the_minute = int(options['MINUTES'])
+    else:
+        the_hour = datetime.datetime.now().time().hour
+        the_minute = datetime.datetime.now().time().minute
     print(parse_time(the_hour, the_minute))
 
-main()
+if __name__ == '__main__':
+    options = docopt.docopt(usage)
+    main()
